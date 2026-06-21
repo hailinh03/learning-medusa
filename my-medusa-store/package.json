@@ -13,7 +13,10 @@
     "test": "turbo test",
     "backend:seed": "turbo seed --filter=@dtc/backend",
     "backend:dev": "turbo dev --filter=@dtc/backend",
-    "storefront:dev": "turbo dev --filter=@dtc/storefront"
+    "storefront:dev": "turbo dev --filter=@dtc/storefront",
+    "db:generate": "pnpm --filter @dtc/backend exec medusa db:generate",
+    "db:migrate": "pnpm --filter @dtc/backend exec medusa db:migrate",
+    "db:create-admin": "pnpm --filter @dtc/backend exec medusa user"
   },
   "pnpm": {
     "overrides": {
