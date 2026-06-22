@@ -11,6 +11,7 @@ export const createBrandStep = createStep( // đây là 1 factory function, cầ
   "create-brand-step",
   // B. Hàm chạy chính (Step Function)
   async (input: CreateBrandStepInput, { container }) => {
+    //container.resolve tương tự @Autowired để lấy service ra
     const brandModuleService: BrandModuleService = container.resolve(BRAND_MODULE)
     const brand = await brandModuleService.createBrands(input)
     return new StepResponse(brand, brand.id)

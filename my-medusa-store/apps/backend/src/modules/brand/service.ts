@@ -1,7 +1,7 @@
 import { MedusaService } from "@medusajs/framework/utils";
 
 import { Brand } from "./models/brand"
-
+// Repository (JpaRepository) + Service (@Service): Cung cấp các hàm CRUD tự động sinh ra và xử lý logic.
 export class BrandModuleService extends MedusaService({
     Brand,
 }) {

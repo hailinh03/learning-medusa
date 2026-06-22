@@ -48,7 +48,7 @@ pnpm db:create-admin -e <email> -p <password>
     *   `-p` hoặc `--password`: Mật khẩu đăng nhập.
 *   **Ví dụ**:
     ```bash
-    pnpm db:create-admin -e admin@test.com -p supersecret
+    pnpm db:create-admin -e admin@medusa-test.com -p supersecret
     ```
 
 ---

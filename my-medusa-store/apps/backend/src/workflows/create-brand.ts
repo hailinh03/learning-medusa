@@ -16,6 +16,7 @@ type CreateBrandWorkflowInput = {
  * 
  * 
  */
+// đây là workflow tương tự Saga Pattern
 export const createBrandWorkflow = createWorkflow(
     "create-brand",
     function (input: CreateBrandWorkflowInput) {
