@@ -5,8 +5,19 @@ import { LinkDefinition } from "@medusajs/framework/types"
 import { BRAND_MODULE } from "../../modules/brand"
 import BrandModuleService from "../../modules/brand/service"
 
+
+// đây là 1 khe cắm vào workflow lõi của medusa. Tức là nó đang cắm  vào workflow của
+// create product và kiểm tra xem nếu request có kèm brand_id thì 
+// sẽ tạo ra 1 brand_id trong database. 
+
+//Khi dùng .hooks có nghĩa là bạn đang can thiệp vào logic của workflow lõi
+// Hooks còn được dùng cho các tính năng như: gửi email, đẩy sang ELASTICSEARCH...
 createProductsWorkflow.hooks.productsCreated(
     // A. Hàm thực thi chính khi Hook chạy
+
+    //Container: Chính là req.scope (IoC Container) được truyền xuyên suốt vào đây.
+    //Giúp bạn gọi container.resolve() để lấy ra các Service cần dùng 
+    // (tương tự @Autowired trong Spring Boot).
     async ({ products, additional_data }, { container }) => {
         // 1. Kiểm tra xem request tạo sản phẩm có gửi kèm brand_id không. Nếu không, bỏ qua.
         if (!additional_data?.brand_id) {
