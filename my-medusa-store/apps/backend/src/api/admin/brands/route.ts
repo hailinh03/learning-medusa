@@ -23,16 +23,20 @@ export const GET = async (
     req: MedusaRequest,
     res: MedusaResponse
 ) => {
-    // 1. Lấy công cụ Query từ Container của request hiện tại (DI từ thư viện Awilix)
     const query = req.scope.resolve("query")
-    // 2. Thực hiện truy vấn đồ thị (Graph Query) chéo module
-
-    const { data: brands } = await query.graph({
+    // Dùng req.queryConfig để nhận các tham số phân trang (limit, offset) từ Client
+    const {
+        data: brands,
+        metadata: { count, take, skip } = {},
+    } = await query.graph({
         entity: "brand",
-        fields: [
-            "*",// Lấy tất cả các cột của bảng brand (id, name...)
-            "products.*" // Lấy tất cả các cột của bảng product được liên kết
-        ],
+        ...req.queryConfig, // Tự động chèn limit, offset, và fields vào đây
     })
-    res.json({ brands })
+    // Trả về dữ liệu kèm theo siêu dữ liệu (metadata) để Frontend làm thanh phân trang
+    res.json({
+        brands,
+        count,        // Tổng số brand có trong Database
+        limit: take,  // Số brand lấy trên 1 trang (mặc định là 15 hoặc 50)
+        offset: skip, // Bỏ qua bao nhiêu bản ghi
+    })
 }

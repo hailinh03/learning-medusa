@@ -1,11 +1,12 @@
 import {
     defineMiddlewares,
     validateAndTransformBody,
+    validateAndTransformQuery,
 } from "@medusajs/framework/http"
 import { PostAdminCreateBrand } from "./admin/brands/validators"
 import { z } from "zod"
-
-
+import { createFindParams } from "@medusajs/medusa/api/utils/validators"
+export const GetBrandsSchema = createFindParams()
 //file này phải gõ đúng là middlewares.ts nếu không sẽ không chạy
 export default defineMiddlewares({
     routes: [
@@ -24,6 +25,19 @@ export default defineMiddlewares({
             additionalDataValidator: {
                 brand_id: z.string().optional(),
             }
-        }
+        },
+        {
+            matcher: "/admin/brands",
+            method: "GET",
+            middlewares: [
+                validateAndTransformQuery(
+                    GetBrandsSchema,
+                    {
+                        defaults: ["id", "name", "products.*"], // Mặc định luôn lấy các cột này
+                        isList: true, // Khai báo đây là API lấy danh sách
+                    }
+                ),
+            ],
+        },
     ],
 })
