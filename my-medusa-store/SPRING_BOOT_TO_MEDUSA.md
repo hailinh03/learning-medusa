@@ -423,3 +423,30 @@ Khi người dùng tạo một sản phẩm mới, Medusa chạy một Workflow 
   ```
   **Điểm khác biệt**: Spring `@EventListener` mặc định không hỗ trợ tự động rollback (Compensation) một cách bài bản nếu các tiến trình bất đồng bộ phía sau bị lỗi. Workflow Hook của Medusa tích hợp chặt chẽ với cơ chế Saga, đảm bảo nếu tạo sản phẩm thất bại ở bước sau thì liên kết vừa tạo cũng sẽ được "dismiss" (xóa bỏ) an toàn.
 
+### C. Mở rộng Payload của Core API (`additionalDataValidator`) vs Kế thừa DTO
+Khi gọi API gốc của Medusa (ví dụ `POST /admin/products`), nếu bạn gửi lên một trường lạ như `brand_id`, mặc định Medusa sẽ **tự động cắt bỏ (strip) hoặc báo lỗi** vì nó không nằm trong schema chuẩn.
+
+Để cho phép gửi thêm dữ liệu tùy chỉnh, Medusa dùng `additionalDataValidator`:
+
+* **Medusa v2 (`middlewares.ts`):**
+  ```typescript
+  {
+      matcher: "/admin/products",
+      method: ["POST"],
+      additionalDataValidator: {
+          brand_id: z.string().optional(),
+      }
+  }
+  ```
+  Nhờ khai báo này, Medusa sẽ giữ lại trường `brand_id` và gom nó vào object `additional_data` để bạn dùng trong Workflow Hook (như ở phần B).
+  **Lưu ý quan trọng**: Vì ta dùng `.optional()`, trường `brand_id` này là **không bắt buộc**. Bạn hoàn toàn có thể tạo sản phẩm mà không cần truyền `brand_id`, hệ thống vẫn hoạt động bình thường.
+
+* **Spring Boot (Kế thừa DTO hoặc dùng Map):**
+  Trong Spring Boot, để làm điều này mà không sửa source code gốc, bạn thường phải tạo class kế thừa, hoặc dùng `@JsonAnySetter` để hứng các trường không xác định:
+  ```java
+  public class CustomProductCreateRequest extends ProductCreateRequest {
+      private String brandId; // Không bắt buộc nếu không dùng @NotNull
+      // getters, setters
+  }
+  ```
+

@@ -18,3 +18,21 @@ export const POST = async (
     // Trả về dữ liệu JSON cho Client
     res.json({ brand: result })
 }
+
+export const GET = async (
+    req: MedusaRequest,
+    res: MedusaResponse
+) => {
+    // 1. Lấy công cụ Query từ Container của request hiện tại (DI từ thư viện Awilix)
+    const query = req.scope.resolve("query")
+    // 2. Thực hiện truy vấn đồ thị (Graph Query) chéo module
+
+    const { data: brands } = await query.graph({
+        entity: "brand",
+        fields: [
+            "*",// Lấy tất cả các cột của bảng brand (id, name...)
+            "products.*" // Lấy tất cả các cột của bảng product được liên kết
+        ],
+    })
+    res.json({ brands })
+}
