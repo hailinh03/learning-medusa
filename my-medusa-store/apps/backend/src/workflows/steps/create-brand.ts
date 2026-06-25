@@ -14,6 +14,17 @@ export const createBrandStep = createStep( // đây là 1 factory function, cầ
     //container.resolve tương tự @Autowired để lấy service ra
     const brandModuleService: BrandModuleService = container.resolve(BRAND_MODULE)
     const brand = await brandModuleService.createBrands(input)
+
+    // Phát event brand.created ra Redis Event Bus
+    const eventBus = container.resolve("event_bus")
+    await eventBus.emit({
+      name: "brand.created",
+      data: {
+        id: brand.id,
+        name: brand.name,
+      },
+    })
+
     return new StepResponse(brand, brand.id)
   },
   // C. Hàm hoàn tác (Compensation Function)

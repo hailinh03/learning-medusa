@@ -25,8 +25,39 @@ services:
     networks:
       - medusa_network
 
+  # Elasticsearch
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:9.4.2
+    container_name: medusa_elasticsearch
+    restart: unless-stopped
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+    ports:
+      - "9200:9200"
+    volumes:
+      - es_data:/usr/share/elasticsearch/data
+    networks:
+      - medusa_network
+
+  # Kibana
+  kibana:
+    image: docker.elastic.co/kibana/kibana:9.4.2
+    container_name: medusa_kibana
+    restart: unless-stopped
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elasticsearch
+    networks:
+      - medusa_network
+
 volumes:
   postgres_data:
+  es_data:
 
 networks:
   medusa_network:
