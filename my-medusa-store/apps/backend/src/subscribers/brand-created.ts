@@ -2,54 +2,53 @@ import type {
   SubscriberArgs,
   SubscriberConfig,
 } from "@medusajs/framework"
+import type MeilisearchModuleService from "../modules/meilisearch/service"
+
+// TODO (tương lai): Thêm subscriber cho brand.updated và brand.deleted
+// để đảm bảo Meilisearch luôn đồng bộ khi brand bị sửa hoặc xóa.
 
 type BrandCreatedPayload = {
   id: string
   name: string
 }
 
+// ─────────────────────────────────────────────────────────
+// Subscriber
+// ─────────────────────────────────────────────────────────
 export default async function brandCreatedHandler({
   event: { data },
   container,
 }: SubscriberArgs<BrandCreatedPayload>) {
   const logger = container.resolve("logger")
-  const brandId = data.id
-  const brandName = data.name
+  const { id: brandId, name: brandName } = data
 
-  logger.info(`[Redis Event Bus] Received brand.created event for ID: ${brandId}, Name: ${brandName}`)
-
-  const elasticsearchUrl = process.env.ELASTICSEARCH_URL || "http://localhost:9200"
+  logger.info(`[Redis Event Bus] Received brand.created event for: "${brandName}" (${brandId})`)
 
   try {
-    logger.info(`[Elasticsearch] Indexing brand ${brandName} (${brandId}) to: ${elasticsearchUrl}/brands/_doc/${brandId}`)
+    // Lấy dịch vụ Meilisearch custom module thông qua IoC container (Dependency Injection)
+    const meilisearchService: MeilisearchModuleService = container.resolve("meilisearch")
 
-    const response = await fetch(`${elasticsearchUrl}/brands/_doc/${brandId}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        id: brandId,
-        name: brandName,
+    // Đưa brand vào Meilisearch index bằng SDK thông qua custom module
+    // SDK sẽ tự tạo index "brands" (nếu chưa có) và gán primary key "id" tự động
+    await meilisearchService.indexData([
+      {
+        id:         brandId,
+        name:       brandName,
         indexed_at: new Date().toISOString(),
-      }),
-    })
+      }
+    ], "brand")
 
-    if (!response.ok) {
-      const errorText = await response.text()
-      logger.error(`[Elasticsearch] Failed to index brand. Status: ${response.status}, Details: ${errorText}`)
-    } else {
-      logger.info(`[Elasticsearch] Successfully indexed brand: ${brandName}`)
-    }
+    logger.info(`[Meilisearch] Brand "${brandName}" successfully indexed using module SDK`)
   } catch (error: any) {
-    // Chúng ta log warning/error thay vì rethrow để tránh làm sập tiến trình Event Bus chính của Medusa
-    logger.error(`[Elasticsearch] Connection error. Is Elasticsearch running at ${elasticsearchUrl}? Details: ${error.message}`)
+    // Log error thay vì rethrow để tránh làm sập Event Bus của Medusa
+    logger.error(`[Meilisearch] Failed to index brand "${brandName}": ${error.message}`)
   }
 }
 
 export const config: SubscriberConfig = {
   event: "brand.created",
   context: {
-    subscriberId: "elasticsearch-brand-indexer",
+    subscriberId: "meilisearch-brand-indexer",
   },
 }
+

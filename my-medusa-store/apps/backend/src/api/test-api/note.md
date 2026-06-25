@@ -35,3 +35,14 @@ Một hệ thống Medusa Backend có thể phục vụ song song cho nhiều Fr
 * Lúc này, một request lên các API bảo mật đó của khách hàng sẽ cần **đồng thời cả hai**:
   1. `x-publishable-api-key`: Để xác định kênh bán hàng (Sales Channel).
   2. `Customer Session JWT`: Để xác định tài khoản khách hàng cụ thể đang đăng nhập.
+
+---
+
+## 3. Quy định về API Thử nghiệm (Test APIs)
+
+Để tránh làm lộn xộn cấu trúc thư mục gốc `/src/api`, **tất cả các API được tạo ra nhằm mục đích test/học tập** bắt buộc phải nằm bên dưới thư mục `/src/api/test-api/` dưới dạng các thư mục con.
+
+* **Quy tắc đặt folder:** `/src/api/test-api/<tên-api-cần-test>`
+* **Ví dụ:**
+  * Thử nghiệm tạo Brand: `/src/api/test-api/brand/route.ts` $\to$ Endpoint: `POST /test-api/brand`
+  * Tránh tạo trực tiếp dạng: `/src/api/test-brand/route.ts` (Vi phạm quy tắc cấu trúc).
