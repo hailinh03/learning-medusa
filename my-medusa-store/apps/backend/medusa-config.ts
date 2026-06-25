@@ -27,6 +27,21 @@ module.exports = defineConfig({
         brandIndexName: 'brands',
       },
     },
+    {
+      resolve: "@medusajs/medusa/notification",
+      options: {
+        providers: [
+          {
+            resolve: "./src/modules/email-resend",
+            id: "resend",
+            options: {
+              apiKey: process.env.RESEND_API_KEY,
+              from: process.env.RESEND_FROM,
+            },
+          },
+        ],
+      },
+    },
     { // giải thích tại sao lại đăng ký nằm ở dưới
       resolve: "@medusajs/event-bus-redis",
       key: "event_bus",
