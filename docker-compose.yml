@@ -25,39 +25,25 @@ services:
     networks:
       - medusa_network
 
-  # Elasticsearch
-  elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:9.4.2
-    container_name: medusa_elasticsearch
+  # Meilisearch
+  meilisearch:
+    image: getmeili/meilisearch:v1.12.0
+    container_name: medusa_meilisearch
     restart: unless-stopped
-    environment:
-      - discovery.type=single-node
-      - xpack.security.enabled=false
-      - ES_JAVA_OPTS=-Xms512m -Xmx512m
     ports:
-      - "9200:9200"
+      - "7700:7700"
+    environment:
+      - MEILI_ENV=development
+      - MEILI_MASTER_KEY=supersecretmasterkey
+      - MEILI_NO_ANALYTICS=true
     volumes:
-      - es_data:/usr/share/elasticsearch/data
-    networks:
-      - medusa_network
-
-  # Kibana
-  kibana:
-    image: docker.elastic.co/kibana/kibana:9.4.2
-    container_name: medusa_kibana
-    restart: unless-stopped
-    environment:
-      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
-    ports:
-      - "5601:5601"
-    depends_on:
-      - elasticsearch
+      - meili_data:/meili_data
     networks:
       - medusa_network
 
 volumes:
   postgres_data:
-  es_data:
+  meili_data:
 
 networks:
   medusa_network:
