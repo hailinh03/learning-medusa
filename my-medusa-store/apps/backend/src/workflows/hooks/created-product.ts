@@ -11,7 +11,7 @@ import BrandModuleService from "../../modules/brand/service"
 // sẽ tạo ra 1 brand_id trong database. 
 
 //Khi dùng .hooks có nghĩa là bạn đang can thiệp vào logic của workflow lõi
-// Hooks còn được dùng cho các tính năng như: gửi email, đẩy sang ELASTICSEARCH...
+// Hooks còn được dùng cho các tính năng như: gửi email,...
 createProductsWorkflow.hooks.productsCreated(
     // A. Hàm thực thi chính khi Hook chạy
 

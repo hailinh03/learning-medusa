@@ -7,7 +7,8 @@ import { ContainerRegistrationKeys, Modules } from "@medusajs/framework/utils"
 type OrderPlacedPayload = {
   id: string
 }
-
+// event này sẽ được kích hoạt khi có đơn hàng được tạo thành công do hệ thống core 
+// của medusa tự kích hoạt 
 export default async function orderPlacedHandler({
   event: { data },
   container,

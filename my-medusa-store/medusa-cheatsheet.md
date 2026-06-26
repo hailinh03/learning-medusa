@@ -10,8 +10,8 @@ Bảng tra cứu nhanh các câu lệnh phát triển Medusa v2 trong dự án M
     ```bash
     pnpm dev
     ```
-    *   **Backend URL**: `http://localhost:9000`
-    *   **Admin Dashboard**: `http://localhost:9000/app` (Tài khoản admin mặc định: `admin@medusa-test.com` / `supersecret`)
+    *   **Backend URL**: `http://localhost:9001`
+    *   **Admin Dashboard**: `http://localhost:9001/app` (Tài khoản admin mặc định: `admin@medusa-test.com` / `supersecret`)
     *   **Storefront URL**: `http://localhost:8000`
 
 ---

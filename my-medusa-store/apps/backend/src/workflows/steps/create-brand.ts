@@ -34,5 +34,14 @@ export const createBrandStep = createStep( // đây là 1 factory function, cầ
     }
     const brandModuleService: BrandModuleService = container.resolve(BRAND_MODULE)
     await brandModuleService.deleteBrands(brandId)
+
+    // Phát event brand.deleted ra Redis Event Bus
+    const eventBus = container.resolve("event_bus")
+    await eventBus.emit({
+      name: "brand.deleted",
+      data: {
+        id: brandId,
+      },
+    })
   }
 )
