@@ -14,12 +14,13 @@ module.exports = defineConfig({
       cookieSecret: process.env.COOKIE_SECRET,
     }
   },
+
   admin: {
-    vite: (config) => {
-      config.server = config.server || {}
-      config.server.allowedHosts = ["api.hailinh.id.vn", "localhost"]
-      return config
-    }
+    vite: () => ({
+      server: {
+        allowedHosts: ["api.hailinh.id.vn", "localhost"],
+      },
+    }),
   },
   modules: [
     {
